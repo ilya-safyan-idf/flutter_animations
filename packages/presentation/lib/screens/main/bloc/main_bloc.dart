@@ -1,16 +1,16 @@
 import 'package:presentation/base/bloc/bloc.dart';
 import 'package:presentation/base/bloc/bloc_impl.dart';
-import 'package:presentation/navigator/base_arguments.dart';
-import 'package:presentation/screens/login/bloc/login_data.dart';
+
 import 'package:injectable/injectable.dart';
+import 'package:presentation/screens/main/bloc/main_data.dart';
 import 'package:presentation/screens/test/test.dart';
 
 enum TypeOfInput { password, login }
 
 @injectable
-abstract class LoginBloc extends Bloc {
+abstract class MainBloc extends Bloc {
   @factoryMethod
-  factory LoginBloc() => _LoginBlocImpl();
+  factory MainBloc() => _MainBlocImpl();
 
   void updateLoadingStatus({required bool loading});
   void onChange({required String inputValue, required TypeOfInput inputType});
@@ -19,10 +19,10 @@ abstract class LoginBloc extends Bloc {
   void moveToTestScreen();
 }
 
-class _LoginBlocImpl extends BlocImpl implements LoginBloc {
-  final LoginData _state = LoginData.init();
+class _MainBlocImpl extends BlocImpl implements MainBloc {
+  final MainData _state = MainData.init();
 
-  _LoginBlocImpl();
+  _MainBlocImpl();
 
   @override
   void initState() {
@@ -72,7 +72,7 @@ class _LoginBlocImpl extends BlocImpl implements LoginBloc {
   @override
   void moveToTestScreen() {
     appNavigator.push(
-      Test.page(arguments: {'test': 123} as BaseArguments),
+      Test.page(),
     );
   }
 }

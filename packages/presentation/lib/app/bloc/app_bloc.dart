@@ -5,7 +5,9 @@ import 'package:injectable/injectable.dart';
 import 'package:presentation/base/bloc/bloc_impl.dart';
 import 'package:presentation/navigator/app_page.dart';
 import 'package:presentation/navigator/base_page.dart';
-import 'package:presentation/screens/login/login_screen.dart';
+import 'package:presentation/screens/circular_animator/circular_animator.dart';
+import 'package:presentation/screens/main/main_screen.dart';
+
 
 @injectable
 abstract class AppBloc extends Bloc {
@@ -115,7 +117,7 @@ class _AppBloc extends BlocImpl implements AppBloc {
 
   AppPage _currentPage() {
     if (_appData.pages.isEmpty) {
-      _appData.pages.add(LoginScreen.page());
+      _appData.pages.add(MainScreen.page());
     }
     return _appData.pages.last as AppPage;
   }
