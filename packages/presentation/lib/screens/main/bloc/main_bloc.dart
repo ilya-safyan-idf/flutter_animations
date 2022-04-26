@@ -65,8 +65,6 @@ class _MainBlocImpl extends BlocImpl implements MainBloc {
   @override
   void onLogin() {
     moveToTestScreen();
-    print(_state.loginValue);
-    print(_state.passwordValue);
   }
 
   @override

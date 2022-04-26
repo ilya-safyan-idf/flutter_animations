@@ -5,7 +5,6 @@ import 'package:injectable/injectable.dart';
 import 'package:presentation/base/bloc/bloc_impl.dart';
 import 'package:presentation/navigator/app_page.dart';
 import 'package:presentation/navigator/base_page.dart';
-import 'package:presentation/screens/circular_animator/circular_animator.dart';
 import 'package:presentation/screens/main/main_screen.dart';
 
 

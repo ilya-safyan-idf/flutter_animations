@@ -1,14 +1,17 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:presentation/animation/circular_animation.dart';
 import 'package:presentation/base/bloc/bloc_data.dart';
 import 'package:presentation/navigator/app_page.dart';
 import 'package:presentation/navigator/base_arguments.dart';
-import 'package:presentation/painters/circleA_painter.dart';
-import 'package:presentation/painters/circleB_painter.dart';
 import 'package:presentation/screens/circular_animator/bloc/circular_bloc.dart';
 import 'package:presentation/base/bloc/bloc_state.dart';
+import 'package:presentation/screens/circular_animator/bloc/circular_data.dart';
+import 'package:presentation/widgets/persone_widget.dart';
+import 'package:presentation/widgets/volLineWidget.dart';
+
+import 'package:presentation/constants/persone_const.dart' as constant;
 
 class CircularAnimator extends StatefulWidget {
   final double size = 250;
@@ -32,12 +35,14 @@ class _CircularAnimatorState extends BlocState<CircularAnimator, CircularBloc>
     with TickerProviderStateMixin {
   @override
   void initState() {
-    bloc.initAnimator(this);
     super.initState();
+    bloc.initState();
+    bloc.initCircleAnimation(this);
   }
 
   @override
   void dispose() {
+    bloc.disposeCircleAnimation();
     bloc.dispose();
     super.dispose();
   }
@@ -45,15 +50,67 @@ class _CircularAnimatorState extends BlocState<CircularAnimator, CircularBloc>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: Colors.white.withAlpha(250),
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(245,210,80, 1).withAlpha(200)
+      ),
       body: StreamBuilder<BlocData>(
           stream: bloc.dataStream,
           builder: (context, snapshot) {
+            final BlocData? blocData = snapshot.data;
+            final CircularData? screenData = blocData?.data;
+
             return Column(
-          
               children: [
-                Carousel(widget.size, bloc),
-                
+                Carousel(
+                  size: widget.size,
+                  screenData: screenData,
+                  onPageChanged: bloc.onPageChanged,
+                  personeWidgetAnimation: bloc.circleAnimator,
+                ),
+                SizedBox(height: 10),
+                screenData?.sliderState == SliderState.slideChanging
+                    ? SizedBox()
+                    : AnimatedOpacity(
+                        opacity: screenData?.opacityLevel ?? 0,
+                        duration: Duration(
+                          milliseconds: 300,
+                        ),
+                        child: Text(
+                          constant.personInfo[screenData?.sliderIndex ?? 0]![0],
+                          style: TextStyle(
+                              color: Colors.black.withAlpha(200),
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                screenData?.sliderState == SliderState.slideChanging
+                    ? SizedBox()
+                    : AnimatedOpacity(
+                        opacity: screenData?.opacityLevel ?? 0,
+                        duration: Duration(
+                          milliseconds: 400,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 12,
+                          ),
+                          child: Text(
+                            constant
+                                .personInfo[screenData?.sliderIndex ?? 0]![1],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black.withAlpha(180),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                Expanded(child: SizedBox()),
+                VolLineWidget(screenData?.progresIndex ?? 0),
+                SizedBox(height: 30),
               ],
             );
           }),
@@ -61,98 +118,60 @@ class _CircularAnimatorState extends BlocState<CircularAnimator, CircularBloc>
   }
 }
 
-class Carousel extends StatefulWidget {
+class Carousel extends StatelessWidget {
   final double size;
-  final CircularBloc bloc;
+  final CircularData? screenData;
+  final CircularAnimation personeWidgetAnimation;
+  final dynamic Function(int, CarouselPageChangedReason)? onPageChanged;
 
-  Carousel(this.size, this.bloc);
-
-  @override
-  State<Carousel> createState() => _Carousel();
-}
-
-class _Carousel extends State<Carousel> {
-  int slideIndex = 0;
+  Carousel({
+    required this.size,
+    required this.screenData,
+    required this.personeWidgetAnimation,
+    required this.onPageChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
         width: Get.width,
         height: Get.height * 0.4,
-        child: Center(
-          child: CarouselSlider(
-              items: [
-                _Persone(widget.size, widget.bloc),
-                _Persone(widget.size, widget.bloc),
-                _Persone(widget.size, widget.bloc),
-              ],
-              options: CarouselOptions(
-                height: Get.height,
-                viewportFraction: 1,
-                disableCenter: true,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                reverse: false,
-                // autoPlay: true,
-                // autoPlayInterval: Duration(seconds: 3),
-                // autoPlayAnimationDuration: Duration(milliseconds: 800),
-                // autoPlayCurve: Curves.fastOutSlowIn,
-                // enlargeCenterPage: true,
-                onPageChanged: (index, _) {
-                  setState(() {
-                    slideIndex = index;
-                  });
-                },
-                scrollDirection: Axis.horizontal,
-              )),
-        ));
-  }
-}
-
-class _Persone extends StatelessWidget {
-  final double size;
-  final CircularBloc bloc;
-
-  const _Persone(this.size, this.bloc);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: AlignmentDirectional.center,
-      children: [
-        RotationTransition(
-          turns: bloc.anim1,
-          child: CustomPaint(
-            painter: CircleAPainter(
-              color: Color.fromRGBO(146, 135, 255, 1),
-            ),
-            child: Container(
-              width: 0.85 * size,
-              height: 0.85 * size,
-            ),
-          ),
-        ),
-        Center(
-          child: RotationTransition(
-            turns: bloc.anim2,
-            child: CustomPaint(
-              painter: CircleBPainter(
-                color: Color.fromRGBO(252, 144, 159, 1),
+        child: CarouselSlider(
+            items: [
+              PersoneWidget(
+                animation: personeWidgetAnimation,
+                size: size,
+                index: 0,
               ),
-              child: Container(
-                width: size,
-                height: size,
+              PersoneWidget(
+                animation: personeWidgetAnimation,
+                size: size,
+                index: 1,
               ),
-            ),
-          ),
-        ),
-        Center(
-          child: Container(
-              width: size * 0.7,
-              height: size * 0.7,
-              child: SvgPicture.asset('assets/images/person.svg')),
-        )
-      ],
-    );
+              PersoneWidget(
+                animation: personeWidgetAnimation,
+                size: size,
+                index: 2,
+              ),
+            ],
+            options: CarouselOptions(
+              height: Get.height,
+              viewportFraction: 1,
+              disableCenter: true,
+              initialPage: 0,
+              enableInfiniteScroll: false,
+              reverse: false,
+              //autoPlay ___Start
+              //
+              autoPlay: true,
+              autoPlayInterval: Duration(seconds: 3),
+              autoPlayAnimationDuration: Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: true,
+              //
+              //autoPlay ___End
+              onPageChanged: onPageChanged,
+              scrollDirection: Axis.horizontal,
+            )));
   }
 }

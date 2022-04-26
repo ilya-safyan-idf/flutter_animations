@@ -22,7 +22,7 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   final gh = _i2.GetItHelper(get, environment, environmentFilter);
   gh.factory<_i3.AppBloc>(() => _i3.AppBloc());
   gh.singleton<_i4.AppNavigator>(_i5.AppNavigatorImpl());
-  gh.factory<_i6.CircularAnimation>(() => _i6.CircularAnimation.init());
+  gh.factory<_i6.CircularAnimation>(() => _i6.CircularAnimation());
   gh.factory<_i7.CircularBloc>(
       () => _i7.CircularBloc(get<_i6.CircularAnimation>()));
   gh.factory<_i8.MainBloc>(() => _i8.MainBloc());
