@@ -30,7 +30,9 @@ class CircleBPainter extends CustomPainter {
 
     final centerX = size.width * 0.4;
     final centerY = size.width * 0;
+
     final lineLength = iconsSize / 2;
+
     canvas.drawLine(Offset(centerX - lineLength, centerY + lineLength),
         Offset(centerX + lineLength, centerY - lineLength), paint);
     canvas.drawLine(Offset(centerX + lineLength, centerY + lineLength),
@@ -41,8 +43,8 @@ class CircleBPainter extends CustomPainter {
 
     // third shape
     canvas.drawOval(
-        Rect.fromLTWH(size.width - iconsSize * 1.5,
-            size.width * 0.445 - iconsSize, iconsSize * 3, iconsSize * 2),
+        Rect.fromLTWH(size.width - iconsSize, size.width * 0.445 - iconsSize,
+            iconsSize * 3, iconsSize * 2),
         paint);
   }
 

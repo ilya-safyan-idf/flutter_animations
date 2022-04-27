@@ -7,7 +7,7 @@ import 'package:presentation/navigator/base_arguments.dart';
 import 'package:presentation/screens/main/bloc/main_bloc.dart';
 
 class MainScreen extends StatefulWidget {
-  static const ROUTE_NAME = '/Login';
+  static const ROUTE_NAME = '/MainScreen';
 
   const MainScreen({Key? key}) : super(key: key);
 

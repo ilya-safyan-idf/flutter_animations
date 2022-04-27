@@ -17,7 +17,7 @@ class AnimationType {
 
     switch (title) {
       case 'circular_animator':
-        appNavigator.push(
+        appNavigator.popAndPush(
           CircularAnimator.page(),
         );
         return;
